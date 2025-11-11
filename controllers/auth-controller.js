@@ -34,14 +34,16 @@ class AuthController {
         console.log("Access Token", accessToken);
         console.log("Refresh Token", refreshToken);
         await tokenService.storeRefreshToken(_id,refreshToken);
-        res.cookie('accessToken',accessToken,{
-            maxAge:1000*60*60*24*30,
-            httpOnly:true
-        });
-        res.cookie('refreshToken',refreshToken,{
-            maxAge:1000*60*60*24*30,
-            httpOnly:true
-        })
+       const cookieOptions = {
+  httpOnly: true,
+  secure: true,        // required on HTTPS (Render)
+  sameSite: "none",    // allow cross-origin cookies (Vercel ↔ Render)
+  path: "/",           // ensure cookie is sent on all routes
+  maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+};
+
+res.cookie("accessToken", accessToken, cookieOptions);
+res.cookie("refreshToken", refreshToken, cookieOptions);
 
         console.log(res);
         res.json({success:true,message:'Login Successfull',user:new UserDto(user)})
