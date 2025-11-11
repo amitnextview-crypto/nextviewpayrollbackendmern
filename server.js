@@ -29,6 +29,7 @@ app.use(cors({
     process.env.CLIENT_URL,
     "http://localhost:3000"
   ],
+   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,                // allow cookies/auth headers
 }));
 
