@@ -25,7 +25,10 @@ const {CLIENT_URL} = process.env;
 console.log(CLIENT_URL);
 
 app.use(cors({
-  origin: 'http://localhost:3000',  // your frontend URL
+  origin: [
+    process.env.CLIENT_URL,
+    "http://localhost:3000"
+  ],
   credentials: true,                // allow cookies/auth headers
 }));
 
