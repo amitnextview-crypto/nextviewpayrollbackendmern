@@ -24,6 +24,8 @@ dbConnection();
 const {CLIENT_URL} = process.env;
 console.log(CLIENT_URL);
 
+app.set("trust proxy", 1);
+
 app.use(cors({
   origin: [
     process.env.CLIENT_URL,
