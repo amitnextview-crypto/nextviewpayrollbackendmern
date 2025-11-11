@@ -52,14 +52,16 @@ const auth = async (req, res, next) => {
 
         // ✅ Assign user and set cookies
         req.user = user;
-        res.cookie('accessToken', accessToken, {
-          maxAge: 1000 * 60 * 60 * 24 * 30,
-          // httpOnly: true,
-        });
-        res.cookie('refreshToken', refreshToken, {
-          maxAge: 1000 * 60 * 60 * 24 * 30,
-          // httpOnly: true,
-        });
+       const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+  maxAge: 1000 * 60 * 60 * 24 * 30,
+};
+
+res.cookie("accessToken", accessToken, cookieOptions);
+res.cookie("refreshToken", refreshToken, cookieOptions);
 
         console.log('✅ Tokens refreshed successfully');
         return next();
