@@ -48,7 +48,7 @@ cron.schedule(
 );
 
 
-app.use("/api/payslip", require("./routes/payslip-route"));
+app.use("/api/payslip", require("./routes/admin-route"));
 
 //Configuration
 app.use(express.urlencoded({ extended: true }));
