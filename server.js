@@ -46,9 +46,7 @@ cron.schedule(
     timezone: "Asia/Kolkata"
   }
 );
-
-
-app.use("/api/payslip", require("./routes/admin-route"));
+app.use("/api/admin", require("./routes/admin-route"));
 
 //Configuration
 app.use(express.urlencoded({ extended: true }));
