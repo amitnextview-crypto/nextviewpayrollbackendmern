@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const User = require("../models/User");
+const User = require("../models/user-model");
 const UserSalaries = require("../models/UserSalaries");
 const Attendance = require("../models/Attendance");
 const Expense = require("../models/Expense");
