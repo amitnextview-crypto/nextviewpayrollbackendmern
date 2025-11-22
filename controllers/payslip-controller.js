@@ -6,7 +6,8 @@ const Expense = require("../models/expense-model");
 
 exports.sendPayslipEmail = async (req, res) => {
   try {
-    const { employeeID, month, year } = req.body;
+  console.log("BODY RECEIVED:", req.body);
+  const { employeeID, month, year } = req.body;
 
     // 1️⃣ Employee find
     const employee = await User.findById(employeeID);
