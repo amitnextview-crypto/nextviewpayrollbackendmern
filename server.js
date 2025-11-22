@@ -1,8 +1,9 @@
 require('dotenv').config();
 const express = require('express');
+const app = express();
+const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT || 5500;
 const cors = require('cors');
-const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
 const dbConnection = require('./configs/db-config');
 const authRoute = require('./routes/auth-route');
@@ -17,24 +18,12 @@ const cron = require("node-cron");
 const userController = require("./controllers/user-controller");
 
 
-const app = express();
-
 // Database Connection
 dbConnection();
 const {CLIENT_URL} = process.env;
 console.log(CLIENT_URL);
 
 app.set("trust proxy", 1);
-
-app.use(cors({
-  origin: [
-    process.env.CLIENT_URL,
-    "http://localhost:3000",
-     "https://nextviewpayrollfrontendmerns-5wt1.vercel.app"
-  ],
-   methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,                // allow cookies/auth headers
-}));
 
 cron.schedule(
   '0 07 15 * * *',
@@ -46,12 +35,24 @@ cron.schedule(
     timezone: "Asia/Kolkata"
   }
 );
-app.use("/api/admin", require("./routes/admin-route"));
 
-//Configuration
-app.use(express.urlencoded({ extended: true }));
+// ✅ Body parser BEFORE routes
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+app.use(cors({
+  origin: [
+    process.env.CLIENT_URL,
+    "http://localhost:3000",
+     "https://nextviewpayrollfrontendmerns-5wt1.vercel.app"
+  ],
+   methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,                // allow cookies/auth headers
+}));
+
+
+app.use("/api/admin", require("./routes/admin-route"));
 
 // ✅ Mount routes
 app.use('/api/auth', authRoute);
