@@ -1,8 +1,8 @@
 const nodemailer = require("nodemailer");
 const User = require("../models/user-model");
-const UserSalaries = require("../models/UserSalaries");
-const Attendance = require("../models/Attendance");
-const Expense = require("../models/Expense");
+const UserSalaries = require("../models/user-salary");
+const Attendance = require("../models/attendance-model");
+const Expense = require("../models/expense-model");
 
 exports.sendPayslipEmail = async (req, res) => {
   try {
