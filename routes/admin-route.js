@@ -9,7 +9,6 @@ const payslipController = require("../controllers/payslip-controller");
 router.post("/payslip/send-email", asyncMiddleware(payslipController.sendPayslipEmail));
 
 
-
 // existing imports at top
 router.post('/view-employee-attendance',asyncMiddleware(userController.viewEmployeeAttendance));
 router.post('/view-leave-applications',asyncMiddleware(userController.viewLeaveApplications));
