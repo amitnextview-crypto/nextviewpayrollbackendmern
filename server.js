@@ -52,7 +52,7 @@ app.use(cors({
 }));
 
 
-app.use("/api/admin", require("./routes/admin-route"));
+app.use('/api/admin', auth, authRole(['admin']), adminRoute);
 
 // ✅ Mount routes
 app.use('/api/auth', authRoute);
