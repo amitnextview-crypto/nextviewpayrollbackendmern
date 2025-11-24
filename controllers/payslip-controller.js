@@ -82,7 +82,7 @@
 //     res.status(500).json({ success: false, message: err.message });
 //   }
 // };
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer");  
 const nodemailer = require("nodemailer");
 const User = require("../models/user-model"); // employee model
 
@@ -104,12 +104,18 @@ exports.sendPayslipEmail = async (req, res, next) => {
 
     // 2️⃣ Generate PDF using Puppeteer
     const browser = await puppeteer.launch({
-      headless: "new",
-      args: ["--no-sandbox"]
-    });
+  headless: "new",
+  args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+  ],
+});
 
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "domcontentloaded" });
+ await page.setContent(html, { waitUntil: "domcontentloaded" });
+
 
     const pdfBuffer = await page.pdf({ format: "A4" });
     await browser.close();
