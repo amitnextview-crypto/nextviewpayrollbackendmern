@@ -51,9 +51,6 @@ app.use(cors({
   credentials: true,                // allow cookies/auth headers
 }));
 
-
-app.use('/api/admin', auth, authRole(['admin']), adminRoute);
-
 // ✅ Mount routes
 app.use('/api/auth', authRoute);
 app.use('/api/admin', auth, authRole(['admin']), adminRoute);
