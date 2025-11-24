@@ -84,7 +84,7 @@
 // };
 const puppeteer = require("puppeteer");
 const nodemailer = require("nodemailer");
-const Payslip = require("../models/user_model");
+const Payslip = require("../models/user-model");
 
 exports.sendPayslipEmail = async (req, res) => {
   try {
