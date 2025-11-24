@@ -4,10 +4,9 @@ const teamController = require('../controllers/team-controller');
 const upload = require('../services/file-upload-service');
 const asyncMiddleware = require('../middlewares/async-middleware');
 const expenseController = require('../controllers/expenseController');
-const payslipController = require("../controllers/payslip-controller");
+const { sendPayslipEmail } = require("../controllers/payslip-controller");
 
-router.post("/payslip/send-email", asyncMiddleware(payslipController.sendPayslipEmail));
-
+router.post("/payslip/send-email", sendPayslipEmail);
 
 // existing imports at top
 router.post('/view-employee-attendance',asyncMiddleware(userController.viewEmployeeAttendance));
