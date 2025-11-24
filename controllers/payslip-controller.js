@@ -84,67 +84,67 @@
 // };
 const puppeteer = require("puppeteer");
 const nodemailer = require("nodemailer");
-const Payslip = require("../models/user-model");
+const User = require("../models/user-model"); // employee model
 
-exports.sendPayslipEmail = async (req, res) => {
+exports.sendPayslipEmail = async (req, res, next) => {
   try {
-    const { employeeID, month, year } = req.body;
+    const { employeeID, month, year, html } = req.body;
 
-    const payslip = await Payslip.findOne({ employeeID, month, year }).populate("employeeID");
-    if (!payslip) return res.status(404).json({ message: "Payslip not found!" });
+    if (!html) {
+      return res.status(400).json({ message: "HTML content missing" });
+    }
 
-    const employee = payslip.employeeID;
+    // 1️⃣ Get Employee Email
+    const employee = await User.findById(employeeID);
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
 
-    // ---- Fix Nodemailer ----
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
+    const employeeEmail = employee.email;
 
-    // ---- Puppeteer HTML PDF (no URL loading) ----
+    // 2️⃣ Generate PDF using Puppeteer
     const browser = await puppeteer.launch({
       headless: "new",
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: ["--no-sandbox"]
     });
 
     const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "networkidle0" });
 
-    const html = `
-      <h1>Payslip - ${month}/${year}</h1>
-      <p><b>Name:</b> ${employee.name}</p>
-      <p><b>Email:</b> ${employee.email}</p>
-      <hr />
-      <p><b>Gross Salary:</b> ₹${payslip.earnings.gross}</p>
-      <p><b>Net Pay:</b> ₹${payslip.totalPay}</p>
-    `;
-
-    await page.setContent(html);
-
-    const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
+    const pdfBuffer = await page.pdf({ format: "A4" });
     await browser.close();
 
-    // ---- Send Email ----
-    await transporter.sendMail({
-      from: process.env.SMTP_USER,
-      to: employee.email,
-      subject: `Payslip for ${month}/${year}`,
-      text: "Your payslip is attached.",
-      attachments: [
-        {
-          filename: `Payslip-${month}-${year}.pdf`,
-          content: pdfBuffer,
-        },
-      ],
+    // 3️⃣ Setup Email Transporter (using your SMTP config)
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: false, // 587 usually false
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+      }
     });
 
-    res.json({ message: "Payslip sent successfully!" });
-  } catch (err) {
-    console.error("Payslip Email Error:", err);
-    res.status(500).json({ message: "Error sending payslip PDF" });
+    // 4️⃣ Send Email to Employee
+    await transporter.sendMail({
+      from: `"NextTech Group" <${process.env.SMTP_USER}>`,
+      to: employeeEmail,
+      subject: `Payslip - ${month}/${year}`,
+      text: "Your monthly payslip is attached.",
+      attachments: [
+        {
+          filename: `Payslip_${month}_${year}.pdf`,
+          content: pdfBuffer
+        }
+      ]
+    });
+
+    return res.json({ message: "Payslip email sent!" });
+
+  } catch (error) {
+    console.log("Email Error:", error);
+    return res.status(500).json({ message: "Error generating/sending payslip PDF" });
   }
 };
+
+
